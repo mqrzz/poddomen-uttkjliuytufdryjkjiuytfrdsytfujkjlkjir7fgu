@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Доступ запрещён</title>
+  <title>Region not supported - Antviz</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;900&family=Onest:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -77,31 +77,150 @@
       from{opacity:0;transform:translateY(18px)}
       to  {opacity:1;transform:translateY(0)}
     }
+
+    .lang-switcher {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+      background: rgba(22, 22, 29, 0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 60px;
+      padding: 6px;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      display: flex;
+      gap: 6px;
+      font-family: 'Onest', sans-serif;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .lang-btn:hover {
+      color: var(--text);
+      background: rgba(108, 99, 255, 0.2);
+    }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.3);
+    }
+
+    @media (max-width: 550px) {
+      .lang-switcher {
+        top: 16px;
+        right: 16px;
+        gap: 4px;
+        padding: 4px;
+      }
+      .lang-btn {
+        padding: 4px 10px;
+        font-size: 0.7rem;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="particles" id="particles"></div>
 
+<div class="lang-switcher">
+  <button class="lang-btn" data-lang="en">EN</button>
+  <button class="lang-btn" data-lang="de">DE</button>
+  <button class="lang-btn" data-lang="es">ES</button>
+  <button class="lang-btn" data-lang="fr">FR</button>
+  <button class="lang-btn" data-lang="ru">RU</button>
+</div>
+
 <div class="hero">
   <div class="hero-inner">
-
     <div class="err-number">
       <span class="err-number-text">403</span>
     </div>
-
-    <div class="err-badge">
-      Доступ запрещён
-    </div>
-
-    <h1 class="err-title">Ваш регион<br/><span>не обслуживается</span></h1>
-
-    <p class="err-desc">Согласно политике безопасности и требованиям регулятора, доступ с вашего IP-адреса и геолокации запрещён. Ваш регион не входит в список разрешённых юрисдикций.</p>
-
+    <div class="err-badge" id="badgeText">Access denied</div>
+    <h1 class="err-title" id="titleLine1">Your region<br/><span id="titleSpan">is not serviced</span></h1>
+    <p class="err-desc" id="descText">According to security policy and regulatory requirements, access from your IP address and geolocation is prohibited. Your region is not included in the list of permitted jurisdictions.</p>
   </div>
 </div>
 
 <script>
+  const translations = {
+    en: {
+      badge: "Access denied",
+      titlePrefix: "Your region",
+      titleHighlight: "is not serviced",
+      desc: "According to security policy and regulatory requirements, access from your IP address and geolocation is prohibited. Your region is not included in the list of permitted jurisdictions."
+    },
+    de: {
+      badge: "Zugriff verweigert",
+      titlePrefix: "Ihre Region",
+      titleHighlight: "wird nicht bedient",
+      desc: "Gemäß der Sicherheitsrichtlinie und regulatorischen Anforderungen ist der Zugriff von Ihrer IP-Adresse und Geolokalisierung untersagt. Ihre Region gehört nicht zu den zugelassenen Gerichtsbarkeiten."
+    },
+    es: {
+      badge: "Acceso denegado",
+      titlePrefix: "Tu región",
+      titleHighlight: "no está disponible",
+      desc: "De acuerdo con la política de seguridad y los requisitos reglamentarios, el acceso desde su dirección IP y geolocalización está prohibido. Su región no está incluida en la lista de jurisdicciones permitidas."
+    },
+    fr: {
+      badge: "Accès refusé",
+      titlePrefix: "Votre région",
+      titleHighlight: "n'est pas desservie",
+      desc: "Conformément à la politique de sécurité et aux exigences réglementaires, l'accès depuis votre adresse IP et votre géolocalisation est interdit. Votre région ne figure pas dans la liste des juridictions autorisées."
+    },
+    ru: {
+      badge: "Доступ запрещён",
+      titlePrefix: "Ваш регион",
+      titleHighlight: "не обслуживается",
+      desc: "Согласно политике безопасности и требованиям регулятора, доступ с вашего IP-адреса и геолокации запрещён. Ваш регион не входит в список разрешённых юрисдикций."
+    }
+  };
+
+  function setLanguage(langCode) {
+    if (!translations[langCode]) return;
+    const t = translations[langCode];
+    
+    const badge = document.getElementById('badgeText');
+    const titleH1 = document.getElementById('titleLine1');
+    const desc = document.getElementById('descText');
+    
+    if (badge) badge.textContent = t.badge;
+    if (titleH1) titleH1.innerHTML = `${t.titlePrefix}<br/><span id="titleSpan">${t.titleHighlight}</span>`;
+    if (desc) desc.textContent = t.desc;
+    
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      const langAttr = btn.getAttribute('data-lang');
+      if (langAttr === langCode) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+    
+    localStorage.setItem('selectedLang', langCode);
+  }
+
+  let savedLang = localStorage.getItem('selectedLang');
+  if (!savedLang || !translations[savedLang]) savedLang = 'en';
+  setLanguage(savedLang);
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      if (lang && translations[lang]) setLanguage(lang);
+    });
+  });
+
   const container = document.getElementById('particles');
   const colors = ['rgba(108,99,255,', 'rgba(167,139,250,', 'rgba(56,189,248,'];
   for(let i = 0; i < 18; i++){
