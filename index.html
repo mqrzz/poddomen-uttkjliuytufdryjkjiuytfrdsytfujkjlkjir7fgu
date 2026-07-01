@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Region is not supported — Antviz</title>
   <meta name="description" content="Region is not supported." />
+  <meta name="robots" content="noindex, nofollow" />
   <link rel="canonical" href="https://geo.antviz.ru" />
   <link rel="icon" href="img/favicon.png" type="image/png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -30,7 +31,7 @@
       --sh2: 0 8px 20px rgba(0,51,153,.08), 0 4px 8px rgba(0,51,153,.08);
       --font: 'Geologica', 'Inter', 'Arial', sans-serif;
     }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
     body {
       background: var(--bg);
       color: var(--text);
@@ -40,8 +41,11 @@
       letter-spacing: -0.02em;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
+      width: 100%;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
     }
 
     /* ── HERO ── */
@@ -195,6 +199,21 @@
       margin: 0 auto;
     }
 
+    .error-note {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 420px;
+      margin: 14px auto 0;
+    }
+    .support-link {
+      color: var(--green-d);
+      font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(20,153,85,.3);
+    }
+    .support-link:hover { border-bottom-color: var(--green-d); }
+
     /* ── Анимация появления ── */
     .reveal {
       opacity: 0;
@@ -275,8 +294,6 @@
 </head>
 <body>
 
-<script src="nav.js" data-page="404"></script>
-
 <!-- Переключатель языков -->
 <div class="lang-switcher" id="langSwitcher">
   <button class="lang-btn" data-lang="en">EN</button>
@@ -316,31 +333,25 @@
 
     <!-- Заголовок -->
     <h1 class="error-title reveal reveal-3" id="titleLine">
-      Ваш регион<br/><em id="titleHighlight">не обслуживается</em>
+      Your region<br/><em id="titleHighlight">is not serviced</em>
     </h1>
 
     <!-- Описание -->
     <p class="error-desc reveal reveal-4" id="descText">
-      Согласно политике безопасности и требованиям регулятора, доступ с вашего IP-адреса и геолокации запрещён. Ваш регион не входит в список разрешённых юрисдикций.
+      According to security policy and regulatory requirements, access from your IP address and geolocation is prohibited. Your region is not included in the list of permitted jurisdictions.
+    </p>
+
+    <!-- VPN -->
+    <p class="error-note reveal reveal-4" id="vpnText">
+      If you are using a VPN or proxy, please turn it off and reload the page.
+    </p>
+
+    <!-- Support -->
+    <p class="error-note reveal reveal-4" id="supportText">
+      If you believe this is a mistake, contact us at <a href="mailto:support@antviz.ru" class="support-link">support@antviz.ru</a>.
     </p>
   </div>
 </section>
-
-<script type="module">
-  import { auth } from './firebase-config.js';
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  onAuthStateChanged(auth, user => {
-    const np = document.getElementById('navProfile');
-    const nl = document.getElementById('navLogin');
-    if (user) {
-      if (np) np.style.display = 'flex';
-      if (nl) nl.style.display = 'none';
-    } else {
-      if (np) np.style.display = 'none';
-      if (nl) nl.style.display = 'flex';
-    }
-  });
-</script>
 
 <script>
   // ── Переводы ──
@@ -348,27 +359,37 @@
     en: {
       titlePrefix: 'Your region',
       titleHighlight: 'is not serviced',
-      desc: 'According to security policy and regulatory requirements, access from your IP address and geolocation is prohibited. Your region is not included in the list of permitted jurisdictions.'
+      desc: 'According to security policy and regulatory requirements, access from your IP address and geolocation is prohibited. Your region is not included in the list of permitted jurisdictions.',
+      vpn: 'If you are using a VPN or proxy, please turn it off and reload the page.',
+      supportPrefix: 'If you believe this is a mistake, contact us at',
     },
     de: {
       titlePrefix: 'Ihre Region',
       titleHighlight: 'wird nicht bedient',
-      desc: 'Gemäß der Sicherheitsrichtlinie und regulatorischen Anforderungen ist der Zugriff von Ihrer IP-Adresse und Geolokalisierung untersagt. Ihre Region gehört nicht zu den zugelassenen Gerichtsbarkeiten.'
+      desc: 'Gemäß der Sicherheitsrichtlinie und regulatorischen Anforderungen ist der Zugriff von Ihrer IP-Adresse und Geolokalisierung untersagt. Ihre Region gehört nicht zu den zugelassenen Gerichtsbarkeiten.',
+      vpn: 'Falls Sie ein VPN oder einen Proxy verwenden, deaktivieren Sie es bitte und laden Sie die Seite neu.',
+      supportPrefix: 'Falls Sie glauben, dass dies ein Fehler ist, kontaktieren Sie uns unter',
     },
     es: {
       titlePrefix: 'Tu región',
       titleHighlight: 'no está disponible',
-      desc: 'De acuerdo con la política de seguridad y los requisitos reglamentarios, el acceso desde su dirección IP y geolocalización está prohibido. Su región no está incluida en la lista de jurisdicciones permitidas.'
+      desc: 'De acuerdo con la política de seguridad y los requisitos reglamentarios, el acceso desde su dirección IP y geolocalización está prohibido. Su región no está incluida en la lista de jurisdicciones permitidas.',
+      vpn: 'Si estás usando una VPN o proxy, desactívalo y recarga la página.',
+      supportPrefix: 'Si crees que esto es un error, contáctanos en',
     },
     fr: {
       titlePrefix: 'Votre région',
       titleHighlight: "n'est pas desservie",
-      desc: "Conformément à la politique de sécurité et aux exigences réglementaires, l'accès depuis votre adresse IP et votre géolocalisation est interdit. Votre région ne figure pas dans la liste des juridictions autorisées."
+      desc: "Conformément à la politique de sécurité et aux exigences réglementaires, l'accès depuis votre adresse IP et votre géolocalisation est interdit. Votre région ne figure pas dans la liste des juridictions autorisées.",
+      vpn: "Si vous utilisez un VPN ou un proxy, veuillez le désactiver et recharger la page.",
+      supportPrefix: "Si vous pensez qu'il s'agit d'une erreur, contactez-nous à",
     },
     ru: {
       titlePrefix: 'Ваш регион',
       titleHighlight: 'не обслуживается',
-      desc: 'Согласно политике безопасности и требованиям регулятора, доступ с вашего IP-адреса и геолокации запрещён. Ваш регион не входит в список разрешённых юрисдикций.'
+      desc: 'Согласно политике безопасности и требованиям регулятора, доступ с вашего IP-адреса и геолокации запрещён. Ваш регион не входит в список разрешённых юрисдикций.',
+      vpn: 'Если вы используете VPN или прокси, отключите его и обновите страницу.',
+      supportPrefix: 'Если вы считаете, что это ошибка, напишите нам на',
     }
   };
 
@@ -379,25 +400,25 @@
     const titleLine = document.getElementById('titleLine');
     const titleHighlight = document.getElementById('titleHighlight');
     const desc = document.getElementById('descText');
+    const vpnText = document.getElementById('vpnText');
+    const supportText = document.getElementById('supportText');
     
     if (titleLine && titleHighlight) {
       titleLine.innerHTML = `${t.titlePrefix}<br/><em id="titleHighlight">${t.titleHighlight}</em>`;
     }
     if (desc) desc.textContent = t.desc;
+    if (vpnText) vpnText.textContent = t.vpn;
+    if (supportText) supportText.innerHTML = `${t.supportPrefix} <a href="mailto:support@antviz.ru" class="support-link">support@antviz.ru</a>.`;
     
     document.querySelectorAll('.lang-btn').forEach(btn => {
       const langAttr = btn.getAttribute('data-lang');
       if (langAttr === langCode) btn.classList.add('active');
       else btn.classList.remove('active');
     });
-    
-    localStorage.setItem('selectedLang', langCode);
   }
 
-  // ── Загрузка сохранённого языка ──
-  let savedLang = localStorage.getItem('selectedLang');
-  if (!savedLang || !translations[savedLang]) savedLang = 'en';
-  setLanguage(savedLang);
+  // ── Всегда стартуем на английском, независимо от прошлых визитов ──
+  setLanguage('en');
 
   // ── Клики по кнопкам языка ──
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -437,6 +458,5 @@
   })();
 </script>
 
-<script src="footer.js" data-page="auth"></script>
 </body>
 </html>
